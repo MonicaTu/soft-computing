@@ -5,6 +5,7 @@ r2 = rand
 n = 100
 t = 1000
 v = [0, 0]
+max = 100
 
 z_gbest = 100 * 100 + 100 * 100
 pos_pbest = [0, 0]
@@ -13,8 +14,8 @@ pos_curr = [0, 0]
 particle = Array.new(n)
 
 for i in 1..n
-    x = rand(200)-100
-    y = rand(200)-100
+    x = rand(max*2)-max
+    y = rand(max*2)-max
     z = x**2 + y**2
     pos_new = [x, y]
     pos_pbest[0] = pos_curr[0] 
