@@ -5,7 +5,9 @@ r2 = rand
 n = 100
 t = 1000
 v = [0, 0]
-max = 100
+max = 4
+
+PI = 3.141592654
 
 z_gbest = 100 * 100 + 100 * 100
 pos_pbest = [0, 0]
@@ -13,10 +15,21 @@ pos_curr = [0, 0]
 
 particle = Array.new(n)
 
+def sphere(x, y)
+   result = x**2 + y**2 
+   return result
+end
+
+def rastrigin(x, y)
+   result = (x**2-10*Math.cos(2*PI*x)+10) + (y**2-10*Math.cos(2*PI*y)+10) 
+   return result
+end
+
 for i in 1..n
     x = rand(max*2)-max
     y = rand(max*2)-max
-    z = x**2 + y**2
+#    z = sphere(x, y) 
+    z = rastrigin(x, y) 
     pos_new = [x, y]
     pos_pbest[0] = pos_curr[0] 
     pos_pbest[1] = pos_curr[1] 
@@ -40,7 +53,8 @@ for i in 1..n
     particle[i][1][1] = particle[i][1][1] + v[1]
 
     # update pos_pbest
-    z = pos_curr[0]**2 + pos_curr[1]**2
+#    z = sphere(pos_curr[0], pos_curr[1])
+    z = rastrigin(pos_curr[0], pos_curr[1])
     if (z < particle[i][3])
         particle[i][2] = pos_curr
         particle[i][3] = z
@@ -51,5 +65,5 @@ for i in 1..n
         pos_gbest = particle[i][1]
     end
 end
+    puts "#{particle[i][3]} at #{particle[i][1]}"
 end
-    puts "#{particle[i][1]}"
