@@ -15,8 +15,8 @@ puts "r1:#{r1} r2:#{r2}"
 
 PI = 3.141592654
 
-pos_pbest = [0, 0]
-pos_curr = [0, 0]
+pso_pbest = [0, 0]
+pso_curr = [0, 0]
 
 particle = Array.new(n)
 
@@ -27,13 +27,13 @@ for i in 1..n
     z_gbest = fn(max, max) 
 
     z = fn(x, y) 
-    pos_new = [x, y]
-    pos_pbest[0] = pos_curr[0] 
-    pos_pbest[1] = pos_curr[1] 
-    particle[i] = [v, pos_new, pos_pbest, z]
+    pso_new = [x, y]
+    pso_pbest[0] = pso_curr[0] 
+    pso_pbest[1] = pso_curr[1] 
+    particle[i] = [v, pso_new, pso_pbest, z]
     
     if (z < z_gbest)
-        pos_gbest = pos_new
+        pso_gbest = pso_new
     end
 end
 
@@ -43,31 +43,31 @@ for j in 1..t
     file = File.open("data/fn/data#{j}.txt", 'wb+')
     for i in 1..n
         # update v
-        # v = c1*r1*(pos_pbest-pos_curr) + c2*r2*(pos_gbest-pos_curr)
-        pos_curr = particle[i][1]
-        v[0] = c1*r1*(pos_pbest[0]-pos_curr[0]) + c2*r2*(pos_gbest[0]-pos_curr[0])
-        v[1] = c1*r1*(pos_pbest[1]-pos_curr[1]) + c2*r2*(pos_gbest[1]-pos_curr[1])
+        # v = c1*r1*(pso_pbest-pso_curr) + c2*r2*(pso_gbest-pso_curr)
+        pso_curr = particle[i][1]
+        v[0] = c1*r1*(pso_pbest[0]-pso_curr[0]) + c2*r2*(pso_gbest[0]-pso_curr[0])
+        v[1] = c1*r1*(pso_pbest[1]-pso_curr[1]) + c2*r2*(pso_gbest[1]-pso_curr[1])
     
-        # update pos_curr 
+        # update pso_curr 
         particle[i][1][0] = particle[i][1][0] + v[0]
         particle[i][1][1] = particle[i][1][1] + v[1]
     
-        # update pos_pbest
-        z = fn(pos_curr[0], pos_curr[1])
+        # update pso_pbest
+        z = fn(pso_curr[0], pso_curr[1])
         if (z < particle[i][3])
-            particle[i][2] = pos_curr
+            particle[i][2] = pso_curr
             particle[i][3] = z
         end
         
         # update gbest
         if (z < z_gbest)
-            pos_gbest = particle[i][1]
+            pso_gbest = particle[i][1]
             z_gbest = z
         end
     
         file << "#{particle[i][1][0]} #{particle[i][1][1]}\n"
 
-        p "(i#{j},p#{i}) #{z_gbest} at #{pos_gbest}"
+        p "(i#{j},p#{i}) #{z_gbest} at #{pso_gbest}"
     end
     file.close
 end
