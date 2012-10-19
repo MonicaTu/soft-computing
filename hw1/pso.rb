@@ -1,5 +1,5 @@
-#require "./sphere.rb"
-require "./rastrigin.rb"
+require "./sphere.rb"
+#require "./rastrigin.rb"
 
 c1 = 2
 c2 = 2
@@ -40,7 +40,7 @@ end
 for j in 1..t 
 #    file = File.open("data/sphere/data#{j}.txt", 'wb+')
 #    file = File.open("data/rastrigin/data#{j}.txt", 'wb+')
-    file = File.open("data/fn/data#{j}.txt", 'wb+')
+#    file = File.open("data/fn/data#{j}.txt", 'wb+')
     for i in 1..n
         # update v
         # v = c1*r1*(pso_pbest-pso_curr) + c2*r2*(pso_gbest-pso_curr)
@@ -65,9 +65,9 @@ for j in 1..t
             z_gbest = z
         end
     
-        file << "#{particle[i][1][0]} #{particle[i][1][1]}\n"
+#        file << "#{particle[i][1][0]} #{particle[i][1][1]}\n"
 
         p "(i#{j},p#{i}) #{z_gbest} at #{pso_gbest}"
     end
-    file.close
+#    file.close
 end
