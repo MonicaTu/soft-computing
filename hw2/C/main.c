@@ -18,9 +18,24 @@
 #include <time.h>
 #include "GA.h"
 
+void print_result(int i)
+{
+    int j;
+
+    printf("\n =========================\n");
+    printf(" %3d times..\n", i);
+    for(j=0; j<POPULATION_CNT; j++){
+        printf("(%5.2lf, %5.2lf, %5.2lf) ", population[j].dec_value_x, population[j].dec_value_y, population[j].fitness);
+        if(j%4==3) printf("\n");
+    }
+    printf("\n =========================\n");
+    printf(" ever find best gene : ");
+    printf("(%5.2lf, %5.2lf, %5.2lf)\n", best_gene.dec_value_x, best_gene.dec_value_y, best_gene.fitness);
+}
+
 int main(int argc, char **argv)
 {
-    int i,j;
+    int i;
 
     srand((unsigned)time(NULL));
     initialize();            // 初始化
@@ -29,17 +44,9 @@ int main(int argc, char **argv)
         //  reproduction_rnd();  // 選擇(隨機式), 收斂速度慢
         crossover();         // 交配
         mutation();          // 突變f
+
+        print_result(i);
     }
-    printf("\n =========================\n");
-    printf(" %3d times..\n", i);
-    for(j=0; j<POPULATION_CNT; j++){
-        printf("(%5.2lf, %5.2lf) ", population[j].dec_value, population[j].fitness);
-        if(j%4==3) printf("\n");
-    }
-    printf("\n =========================\n");
-    printf(" ever find best gene : ");
-    printf("(%5.2lf, %5.2lf)\n", best_gene.dec_value, best_gene.fitness);
-    getchar();
     return 0;
 }
 

@@ -14,7 +14,7 @@
 #ifndef __GA__
 #define __GA__
 
-#define GENETIC_LENGTH     4                     // 基因長度
+#define GENETIC_LENGTH     8                     // 基因長度
 #define POPULATION_CNT     10                    // 母群數量
 #define ITERA_CNT          100                   // 迭代次數
 #define CROSSOVER_RATE     0.5                   // 交配率
@@ -25,7 +25,8 @@
 typedef struct tag_parent_t{
     int genes[GENETIC_LENGTH];
     double fitness;
-    double dec_value;
+    double dec_value_x;
+    double dec_value_y;
 }parent_t;
 
 // GAPosRand(): 隨機取得突變位置
@@ -61,19 +62,29 @@ parent_t best_gene;                       // 從以前到現在最好的基因
 // binary 2 dec，將染色體中的二進位(genes) ，轉為實際可用之十進位(dec_value)
 void cal_xvalue(parent_t *x)
 {
-    int i, dec=0;
+    int i, dec_x=0, dec_y=0;
     for(i=0; i<GENETIC_LENGTH; i++){
-        if(x->genes[i] ==1) dec = dec + (0x01 << i);
+        if(i<(GENETIC_LENGTH/2)) {
+            if(x->genes[i] ==1) dec_x = dec_x + (0x01 << (GENETIC_LENGTH/2-1)-i);
+        } else {
+            if (i == (GENETIC_LENGTH/2))
+            if(x->genes[i] ==1) dec_y = dec_y + (0x01 << (GENETIC_LENGTH/2-1)-(i-GENETIC_LENGTH/2));
+        }
     }
-    x->dec_value = (double)dec;
+    x->dec_value_x = (double)dec_x;
+    x->dec_value_y = (double)dec_y;
+
+//        printf("(%5.2lf, %5.2lf) ", x->dec_value_x, x->dec_value_y);
 }
 
 // =====================================================
 // 適應函式，此設為f(x) = x*x，其中x 為染色體中之十進位，即dec_value
 void cal_fitness(parent_t *x)
 {
-    double i = x->dec_value;
-    x->fitness =i*i;
+    double i = x->dec_value_x;
+    double j = x->dec_value_y;
+    x->fitness = (i*i + j*j);
+//        printf("%5.2lf\n", x->fitness);
 }
 
 // =====================================================
@@ -82,9 +93,11 @@ void initialize()
 {
     int i, j;
     for(i=0; i<POPULATION_CNT; i++){
+            printf("\n%d: ", i);
         for(j=0; j<GENETIC_LENGTH; j++){
             // 每個母體的基因都是隨機給/1
             population[i].genes[j] = BinaryRand();
+            printf("%d", population[i].genes[j]);
         }
         // 計算母體基因之進制值
         cal_xvalue(&population[i]);
@@ -96,7 +109,7 @@ void initialize()
             memcpy(&best_gene,
                     &population[i],
                     sizeof(parent_t));
-        } else if (population[i].fitness > best_gene.fitness){
+        } else if (population[i].fitness < best_gene.fitness){
             memcpy(&best_gene,
                     &population[i],
                     sizeof(parent_t));
@@ -137,7 +150,7 @@ void reproduction()
         pos1 = rand() % POPULATION_CNT;
         do{pos2=rand()%POPULATION_CNT;}while(pos1==pos2);
         // 比較好的那條丟到交配池去
-        if(population[pos1].fitness > population[pos2].fitness) i = pos1;
+        if(population[pos1].fitness < population[pos2].fitness) i = pos1;
         else i=pos2;
         memcpy(&pool[has_copy++],&population[i],sizeof(parent_t));
     }
@@ -240,7 +253,7 @@ void mutation()
         cal_xvalue(&population[i]);  // 先算基因對應之進制x 值
         cal_fitness(&population[i]); // 再將進制x 值代入適應函式
         // 再更新best_gene
-        if (population[i].fitness > best_gene.fitness){
+        if (population[i].fitness < best_gene.fitness){
             memcpy(&best_gene,
                     &population[i],
                     sizeof(parent_t));
