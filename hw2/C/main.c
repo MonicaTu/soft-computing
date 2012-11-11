@@ -18,19 +18,21 @@
 #include <time.h>
 #include "GA.h"
 
-void print_result(int i)
+void print_ever_best()
+{
+    printf("ever find best gene : ");
+    printf("(%5.2lf, %5.2lf) %5.2lf\n", best_gene.dec_value_x, best_gene.dec_value_y, best_gene.fitness);
+}
+
+void print_particles(int i)
 {
     int j;
 
-    printf("\n =========================\n");
-    printf(" %3d times..\n", i);
+    printf("=========================\n");
     for(j=0; j<POPULATION_CNT; j++){
-        printf("(%5.2lf, %5.2lf, %5.2lf) ", population[j].dec_value_x, population[j].dec_value_y, population[j].fitness);
-        if(j%4==3) printf("\n");
+        printf("(%5.2lf, %5.2lf) %5.2lf\n", population[j].dec_value_x, population[j].dec_value_y, population[j].fitness);
     }
-    printf("\n =========================\n");
-    printf(" ever find best gene : ");
-    printf("(%5.2lf, %5.2lf, %5.2lf)\n", best_gene.dec_value_x, best_gene.dec_value_y, best_gene.fitness);
+    printf("=========================\n");
 }
 
 int main(int argc, char **argv)
@@ -45,8 +47,16 @@ int main(int argc, char **argv)
         crossover();         // 交配
         mutation();          // 突變f
 
-        print_result(i);
-        cal_average();
+        printf("(%3d run) ", i);
+
+        float mean = cal_mean();
+        printf("partical_mean: %f\n", mean);
+
+/*        float avg = cal_average();*/
+/*        printf("avg: %f\n", avg);*/
+
+/*        print_particles(i);*/
+/*        print_ever_best();*/
     }
     return 0;
 }

@@ -56,8 +56,9 @@ void mutation();
 void cal_fitness(parent_t *x);
 // 計算基因對應之進制值
 void cal_xvalue(parent_t *x);
-// 計算基因對應之進制值
-void cal_average();
+
+float cal_average();
+float cal_mean();
 
 // =====================================================
 
@@ -89,8 +90,7 @@ void cal_xvalue(parent_t *x)
 //    printf("(x:%5.2lf, y:%5.2lf) ", x->dec_value_x, x->dec_value_y);
 }
 // =====================================================
-// binary 2 dec，將染色體中的二進位(genes) ，轉為實際可用之十進位(dec_value)
-void cal_average()
+float cal_average()
 {
     int i;
     float sum=0.0, avg=0.0;
@@ -100,7 +100,20 @@ void cal_average()
     }
 
     avg = sum / (float)POPULATION_CNT;
-    printf("avg: %f\n", avg);
+    return avg;
+}
+// =====================================================
+float cal_mean()
+{
+    int i;
+    float sum=0.0, mean=0.0;
+    float avg = cal_average();
+    for (i = 0; i < POPULATION_CNT; i++) {
+        sum = sum + pow((population[i].fitness - avg), 2);
+    }
+
+    mean = sum / (float)POPULATION_CNT;
+    return mean;
 }
 
 // =====================================================
@@ -119,11 +132,11 @@ void initialize()
 {
     int i, j;
     for(i=0; i<POPULATION_CNT; i++){
-            printf("\n%d: ", i);
+//            printf("\n%d: ", i);
         for(j=0; j<GENETIC_LENGTH; j++){
             // 每個母體的基因都是隨機給/1
             population[i].genes[j] = BinaryRand();
-            printf("%d", population[i].genes[j]);
+//            printf("%d", population[i].genes[j]);
         }
         // 計算母體基因之進制值
         cal_xvalue(&population[i]);
