@@ -2,7 +2,7 @@
 #define __GA__
 
 #define GENETIC_LENGTH     16
-#define CROSSOVER_RATE     0.5
+#define CROSSOVER_RATE     0.8
 #define MUTATION_RATE      0.1
 
 #ifdef SPHERE
