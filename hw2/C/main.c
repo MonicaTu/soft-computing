@@ -1,16 +1,3 @@
-/*******************************************************************/
-/*                                                                 */
-/*     filename : GaMain.c                                         */
-/*     author   : edison.shih/edisonx                              */
-/*     compiler : Visual C++ 2008                                  */
-/*     date     : 2010.02.14                                       */
-/*     maintain : 2011.11.21                                       */
-/*     maintain : 2012.06.15                                       */
-/*                                                                 */
-/*         A.L.L.      R.I.G.H.T.S.     R.E.S.E.R.V.E.             */
-/*                                                                 */
-/*******************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,24 +27,24 @@ int main(int argc, char **argv)
     int i;
 
     srand((unsigned)time(NULL));
-    initialize();            // 初始化
+    initialize();
     for(i=0; i<ITERA_CNT; i++){
-        reproduction();      // 選擇(分配式)
-        //  reproduction_rnd();  // 選擇(隨機式), 收斂速度慢
-        crossover();         // 交配
-        mutation();          // 突變f
+        reproduction();
+        crossover();
+        mutation();
 
-        printf("(%3d run) ", i);
+        printf("\n(%3d itera) ", i);
 
         float mean = cal_mean();
-        printf("partical_mean: %f\n", mean);
+        printf("mean: %12.2lf; ", mean);
 
-/*        float avg = cal_average();*/
-/*        printf("avg: %f\n", avg);*/
+        float var = cal_var();
+        printf("var: %12.2lf; ", var);
 
 /*        print_particles(i);*/
 /*        print_ever_best();*/
     }
+    printf("\n");
     return 0;
 }
 
