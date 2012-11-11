@@ -51,6 +51,8 @@ void mutation();
 void cal_fitness(parent_t *x);
 // 計算基因對應之進制值
 void cal_xvalue(parent_t *x);
+// 計算基因對應之進制值
+void cal_average();
 
 // =====================================================
 
@@ -75,6 +77,20 @@ void cal_xvalue(parent_t *x)
     x->dec_value_y = (double)dec_y;
 
 //        printf("(%5.2lf, %5.2lf) ", x->dec_value_x, x->dec_value_y);
+}
+// =====================================================
+// binary 2 dec，將染色體中的二進位(genes) ，轉為實際可用之十進位(dec_value)
+void cal_average()
+{
+    int i;
+    float sum=0.0, avg=0.0;
+    for (i = 0; i < POPULATION_CNT; i++) {
+        cal_fitness(&population[i]);
+        sum = sum + population[i].fitness;
+    }
+
+    avg = sum / (float)POPULATION_CNT;
+    printf("avg: %f\n", avg);
 }
 
 // =====================================================

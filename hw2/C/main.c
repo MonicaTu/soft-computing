@@ -46,6 +46,7 @@ int main(int argc, char **argv)
         mutation();          // 突變f
 
         print_result(i);
+        cal_average();
     }
     return 0;
 }
