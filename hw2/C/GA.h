@@ -14,11 +14,16 @@
 #ifndef __GA__
 #define __GA__
 
-#define GENETIC_LENGTH     8                     // 基因長度
+#define GENETIC_LENGTH     16                     // 基因長度
 #define POPULATION_CNT     10                    // 母群數量
-#define ITERA_CNT          100                   // 迭代次數
+#define ITERA_CNT          20                   // 迭代次數
 #define CROSSOVER_RATE     0.5                   // 交配率
 #define MUTATION_RATE      0.1                   // 突變率
+
+#define MAX (4.0)
+#define MIN (-4.0)
+
+#include <math.h>
 
 // =====================================================
 // 定義母體結構
@@ -64,19 +69,24 @@ parent_t best_gene;                       // 從以前到現在最好的基因
 // binary 2 dec，將染色體中的二進位(genes) ，轉為實際可用之十進位(dec_value)
 void cal_xvalue(parent_t *x)
 {
-    int i, dec_x=0, dec_y=0;
+    int i;
+    double dec_x=0, dec_y=0;
     for(i=0; i<GENETIC_LENGTH; i++){
         if(i<(GENETIC_LENGTH/2)) {
-            if(x->genes[i] ==1) dec_x = dec_x + (0x01 << (GENETIC_LENGTH/2-1)-i);
+            if(x->genes[i] ==1) dec_x = dec_x + (0x01 << ((GENETIC_LENGTH/2-1)-i));
         } else {
-            if (i == (GENETIC_LENGTH/2))
-            if(x->genes[i] ==1) dec_y = dec_y + (0x01 << (GENETIC_LENGTH/2-1)-(i-GENETIC_LENGTH/2));
+            if(x->genes[i] ==1) dec_y = dec_y + (0x01 << ((GENETIC_LENGTH/2-1)-(i-GENETIC_LENGTH/2)));
         }
     }
     x->dec_value_x = (double)dec_x;
     x->dec_value_y = (double)dec_y;
 
-//        printf("(%5.2lf, %5.2lf) ", x->dec_value_x, x->dec_value_y);
+    // adjust value between MAX~MIN
+    double c, max=MAX, min=MIN;
+    c = (max-min)/(pow(2, GENETIC_LENGTH/2)-1.0);
+    x->dec_value_x = (double)(min+dec_x*c);
+    x->dec_value_y = (double)(min+dec_y*c);
+//    printf("(x:%5.2lf, y:%5.2lf) ", x->dec_value_x, x->dec_value_y);
 }
 // =====================================================
 // binary 2 dec，將染色體中的二進位(genes) ，轉為實際可用之十進位(dec_value)
