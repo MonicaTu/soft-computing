@@ -156,77 +156,44 @@ void selection()
         fitness_sum += population[i].fitness;
     }
 
-	  printf("\n");
 	  double percent_sum = 0.0;
     for(i=0; i<POPULATION_CNT && Slack!=0; i++) {
-/*        cnt = (int)(population[i].fitness/fitness_sum + 0.5);*/
-/*        percent = ((((1-(population[i].fitness/fitness_sum))/POPULATION_CNT)-0.04)*100);*/
-	  percent = population[i].fitness/fitness_sum;
-/*        percent = ((1-percent)/(POPULATION_CNT-1)); */
-	  percent = ((1-percent)/(POPULATION_CNT-1));
-	  percent = percent*POPULATION_CNT;
-/*        percent = percent*POPULATION_CNT;*/
-/*        percent = percent*20+0.5;*/
-/*        percent = percent+0.5;*/
-/*        percent = 1-percent;*/
-/*        percent = ((1-(population[i].fitness/fitness_sum))/POPULATION_CNT);*/
-/*        percent = percent * POPULATION_CNT;*/
-/*        cnt = (int)((1-(population[i].fitness/fitness_sum) + 0.5))*POPULATION_CNT;*/
-/*        percent = 1-(population[i].fitness/fitness_sum)+0.5;*/
-/*        cnt = (int)(1-(population[i].fitness/fitness_sum)+0.5);*/
-/*        cnt = (int)(1-(population[i].fitness/fitness_sum)+0.5);*/
-/*        cnt = (int)(percent*POPULATION_CNT+0,5);*/
-    cnt = (int)percent;
-/*        if (cnt<1)*/
-/*                cnt = 0;*/
-//        for (j = 0; j<GENETIC_LENGTH; j++)
-//          printf("%d", population[i].genes[j]);
-//        printf(" %d) percent:%f cnt:%d fitness:%f fitness_sum:%f\n", i, percent, cnt, population[i].fitness, fitness_sum);
-/*        if(cnt > Slack) cnt=Slack;*/
-/*                  printf("cnt:%d, Slack:%d\n", cnt, Slack);*/
+        percent = population[i].fitness/fitness_sum;
+        percent = ((1-percent)/(POPULATION_CNT-1));
+        percent = percent*POPULATION_CNT;
+        cnt = (int)percent;
         for(j=0; j<cnt; ++j, ++has_copy){
             memcpy(&pool[has_copy],
                     &population[i],
                     sizeof(parent_t));
-//    printf("for) pool[%d], fitness:%f\n", has_copy, pool[has_copy].fitness);
-	      }
-/*        Slack-=cnt;*/
-/*        percent_sum += percent;*/
+            //    printf("for) pool[%d], fitness:%f\n", has_copy, pool[has_copy].fitness);
+        }
     }
-/*        printf("percent_sum: %f\n", percent_sum);*/
-/*    while(has_copy < POPULATION_CNT){*/
-/*        pos1 = rand() % POPULATION_CNT;*/
-/*        do{pos2=rand()%POPULATION_CNT;}while(pos1==pos2);*/
-/*        if(population[pos1].fitness < population[pos2].fitness) i = pos1;*/
-/*        else i=pos2;*/
-/*        memcpy(&pool[has_copy++],&population[i],sizeof(parent_t));*/
-/*    }*/
-//printf("start (has_copy: %d)\n", has_copy);
+
     while(has_copy < POPULATION_CNT){
-          if (has_copy < 2) {
-            printf("has_copy = 1, pos1 = 1, pos2 = 1\n");
+        if (has_copy < 2) {
+            printf("\nhas_copy = 1, pos1 = 1, pos2 = 1\n");
             pos1 = 1;
             pos2 = 1;
-          } else {
-              pos1 = rand() % has_copy;
+        } else {
+            pos1 = rand() % has_copy;
 
-              do{
-                  pos2 = rand() % has_copy;
-              } while(pos1 == pos2);
+            do{
+                pos2 = rand() % has_copy;
+            } while(pos1 == pos2);
         }
 
         if(pool[pos1].fitness < pool[pos2].fitness)
-          i = pos1;
+            i = pos1;
         else
-          i=pos2;
+            i=pos2;
         memcpy(&pool[has_copy++],&pool[i],sizeof(parent_t));
-//    printf("while) pool[%d], fitness:%f\n", has_copy, pool[has_copy-1].fitness);
+        //    printf("while) pool[%d], fitness:%f\n", has_copy, pool[has_copy-1].fitness);
     }
-//printf("end\n");
-	for(i = 0; i < POPULATION_CNT; i++) {
-		memcpy(&population[i], &pool[i], sizeof(parent_t));
-	}
-//printf("end\n");
+
+    for(i = 0; i < POPULATION_CNT; i++) {
+        memcpy(&population[i], &pool[i], sizeof(parent_t));
+    }
 }
 
 void selection_rnd()
@@ -263,14 +230,16 @@ void crossover()
     double crossover_if;
 
     while(cnt < POPULATION_CNT) {
-        p1 =  rand() % POPULATION_CNT;
-        do{p2=  rand()% POPULATION_CNT;}while(p2==p1);
+        p1 = rand() % POPULATION_CNT;
+        do {
+           p2 = rand()% POPULATION_CNT;
+        }while(p2==p1);
 
-//  printf("\np1:%d, p2:%d", p1, p2);
+        //  printf("\np1:%d, p2:%d", p1, p2);
 
         crossover_if = SRand();
         if(crossover_if > CROSSOVER_RATE) {
-//            printf("\n!crossover");
+            //            printf("\n!crossover");
             memcpy( (void *)&population[p1],
                     (void *)&pool[p1],
                     sizeof(parent_t));
@@ -279,14 +248,13 @@ void crossover()
                     sizeof(parent_t));
         }
         else {
-//            do{
+            do{
                 pos = GAPosRand();
-//            } while(pos==0);
-//            printf(" pos:%d \n", pos);
+            } while(pos==0);
             // crossover
             for(i=0; i<pos; i++){
-		            population[p1].genes[i] = pool[p1].genes[i];
-		            population[p2].genes[i] = pool[p2].genes[i];
+                population[p1].genes[i] = pool[p1].genes[i];
+                population[p2].genes[i] = pool[p2].genes[i];
             }
             for(i=pos; i<GENETIC_LENGTH; i++) {
                 population[p2].genes[i] = pool[p1].genes[i];
