@@ -2,16 +2,16 @@
 #ifdef SPHERE
 #define MAX (100.0)
 #define MIN (-100.0)
-#define POPULATION_CNT   100
-#define ITERA_CNT        200
+#define POPULATION_CNT     100
+#define ITERA_CNT          200
 #endif
 
 #ifdef RASTRIGIN
 #define MAX (4.0)
 #define MIN (-4.0)
 #define PI  (3.141592654)
-#define POPULATION_CNT     2
-#define ITERA_CNT          2
+#define POPULATION_CNT     100
+#define ITERA_CNT          200
 #endif
 
 #define GENETIC_LENGTH     16
