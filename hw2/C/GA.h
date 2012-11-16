@@ -3,7 +3,7 @@
 #define MAX (100.0)
 #define MIN (-100.0)
 #define POPULATION_CNT     100
-#define ITERA_CNT          200
+#define ITERA_CNT          5000
 #endif
 
 #ifdef RASTRIGIN
@@ -145,23 +145,35 @@ void selection()
 {
 //    printf("\nselection\n");
 
-    int i, j, cnt, has_copy=0;
-    int Slack = POPULATION_CNT;
+    int i, j, cnt, has_copy = 0;
     int pos1, pos2;
-    double fitness_sum=0.0;
+    double fitness_sum = 0.0;
 
-	  double percent;
+	  double percent = 0;
+	  double total_percent = 0;
 
     for(i=0; i<POPULATION_CNT; i++) {
         fitness_sum += population[i].fitness;
     }
 
 	  double percent_sum = 0.0;
-    for(i=0; i<POPULATION_CNT && Slack!=0; i++) {
+//    printf("\n");
+    for(i=0; i<POPULATION_CNT; i++) {
+//        percent = (population[i].fitness/fitness_sum)*100+0.5;
+//        percent = (fitness_sum-population[i].fitness)/fitness_sum;
         percent = population[i].fitness/fitness_sum;
         percent = ((1-percent)/(POPULATION_CNT-1));
         percent = percent*POPULATION_CNT;
+        percent = percent;                      // CASE1
+//        percent = percent+(1.0/POPULATION_CNT); // CASE2
         cnt = (int)percent;
+//        total_percent = total_percent + percent;
+//        printf("%f ", total_percent);
+//        printf("%d(%f) x p[%d], fitness:%f\n", cnt, percent, i, population[i].fitness);
+        if (has_copy >= POPULATION_CNT) {
+            printf("Warning: exceed %d.\n", POPULATION_CNT);
+            getchar();
+        }
         for(j=0; j<cnt; ++j, ++has_copy){
             memcpy(&pool[has_copy],
                     &population[i],
