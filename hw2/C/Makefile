@@ -3,7 +3,7 @@ sphere:
 	./sphere
 
 rastrigin:
-	gcc -DRASTRIGIN -lm -o rastrigin main.c 
+	gcc -DRASTRIGIN -o rastrigin main.c -lm 
 	./rastrigin
 
 clean:
