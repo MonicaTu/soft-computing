@@ -7,6 +7,8 @@ int main(int argc, char **argv)
     srand((unsigned)time(NULL));
 
     initialize();
+    print_particles(0);
+
     for(i=0; i<ITERA_CNT; i++){
         selection();
 
@@ -21,6 +23,7 @@ int main(int argc, char **argv)
         float var = cal_var();
         printf(" || var: %10.10lf;", var);
         if ( var < 0.0000000001 ) {
+          print_particles((POPULATION_CNT-1));
           break;
         }
     }

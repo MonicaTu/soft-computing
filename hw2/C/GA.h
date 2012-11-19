@@ -2,7 +2,7 @@
 #ifdef SPHERE
 #define MAX (100.0)
 #define MIN (-100.0)
-#define POPULATION_CNT     100
+#define POPULATION_CNT     200
 #define ITERA_CNT          5000
 #endif
 
@@ -10,11 +10,11 @@
 #define MAX (4.0)
 #define MIN (-4.0)
 #define PI  (3.141592654)
-#define POPULATION_CNT     100
-#define ITERA_CNT          200
+#define POPULATION_CNT     200
+#define ITERA_CNT          5000
 #endif
 
-#define GENETIC_LENGTH     16
+#define GENETIC_LENGTH     32
 #define CROSSOVER_RATE     0.9
 #define MUTATION_RATE      0.001
 
@@ -23,7 +23,7 @@ typedef struct tag_parent_t{
     double fitness;
     double dec_value_x;
     double dec_value_y;
-}parent_t;
+} parent_t;
 
 void initialize();
 void selection();
@@ -52,8 +52,7 @@ parent_t population[POPULATION_CNT];
 parent_t pool[POPULATION_CNT];
 parent_t best_gene;
 
-void print_particles();
-void print_particles();
+void print_particles(int num);
 
 void cal_xvalue(parent_t *x)
 {
@@ -310,38 +309,23 @@ void mutation()
     }
 }
 
-//void print_particles()
-//{
-//  int i;
-//  parent_t* t;
-//  printf("\n======================================\n");
-//  for (i=0; i<POPULATION_CNT; i++) {
-//    t = &population[i];
-//    printf("(%5.2lf, %5.2lf) %5.2lf\n",
-//      t->dec_value_x,
-//      t->dec_value_y,
-//      t->fitness);
-//  }
-//  printf("======================================\n");
-//}
-
-void print_particles()
+void print_particles(int num)
 {
-	int i, j;
-  parent_t* t;
-	printf("\n======================================\n");
-	for (i=0; i<POPULATION_CNT; i++) {
-      t = &population[i];
-	    printf("%d) ", i);
-	    for (j=0; j<GENETIC_LENGTH; j++) {
-		    printf("%d", t->genes[j]);
-	    }
-      printf(" (%5.2lf, %5.2lf) %5.2lf\n",
-        t->dec_value_x,
-        t->dec_value_y,
-        t->fitness);
-	}
-	printf("\n======================================\n");
+    int i, j;
+    parent_t* t;
+    printf("\n======================================\n");
+    for (i=num; i<POPULATION_CNT; i++) {
+        t = &population[i];
+//        printf("%d) ", i);
+        for (j=0; j<GENETIC_LENGTH; j++) {
+            printf("%d", t->genes[j]);
+        }
+        printf(" (%5.10lf, %5.10lf) %5.10lf\n",
+                t->dec_value_x,
+                t->dec_value_y,
+                t->fitness);
+    }
+    printf("======================================\n");
 }
 
 void print_ever_best()
