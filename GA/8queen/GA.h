@@ -1,33 +1,18 @@
-
-#ifdef SPHERE
-#define MAX (100.0)
-#define MIN (-100.0)
-#define POPULATION_CNT     200
+#define POPULATION_CNT     10
 #define ITERA_CNT          5000
-#endif
 
-#ifdef RASTRIGIN
-#define MAX (4.0)
-#define MIN (-4.0)
-#define PI  (3.141592654)
-#define POPULATION_CNT     200
-#define ITERA_CNT          5000
-#endif
-
-#define GENETIC_LENGTH     32
+#define GENETIC_LENGTH     8
 #define CROSSOVER_RATE     0.9
-#define MUTATION_RATE      0.001
+#define MUTATION_RATE      0.02
 
 typedef struct tag_parent_t{
     int genes[GENETIC_LENGTH];
     double fitness;
     double dec_value_x;
-    double dec_value_y;
 } parent_t;
 
 void initialize();
 void selection();
-void selection_rnd();
 void crossover();
 void mutation();
 
@@ -66,13 +51,13 @@ void cal_xvalue(parent_t *x)
         }
     }
     x->dec_value_x = (double)dec_x;
-    x->dec_value_y = (double)dec_y;
+//    x->dec_value_y = (double)dec_y;
 
     // adjust value between MAX~MIN
-    double c, max=MAX, min=MIN;
-    c = (max-min)/(pow(2, GENETIC_LENGTH/2)-1.0);
-    x->dec_value_x = (double)(min+dec_x*c);
-    x->dec_value_y = (double)(min+dec_y*c);
+//    double c, max=MAX, min=MIN;
+//    c = (max-min)/(pow(2, GENETIC_LENGTH/2)-1.0);
+//    x->dec_value_x = (double)(min+dec_x*c);
+//    x->dec_value_y = (double)(min+dec_y*c);
     //printf("(x:%5.2lf, y:%5.2lf) ", x->dec_value_x, x->dec_value_y);
 }
 
@@ -105,44 +90,34 @@ float cal_var()
 void cal_fitness(parent_t *x)
 {
     double i = x->dec_value_x;
-    double j = x->dec_value_y;
+//    double j = x->dec_value_y;
 #ifdef SPHERE
-    x->fitness = (i*i + j*j);
+//    x->fitness = (i*i + j*j);
 #endif
 #ifdef RASTRIGIN
-    x->fitness = (pow(i, 2)-10*cos(2*PI*i)+10) + (pow(j, 2)-10*cos(2*PI*j)+10);
+//    x->fitness = (pow(i, 2)-10*cos(2*PI*i)+10) + (pow(j, 2)-10*cos(2*PI*j)+10);
 #endif
 //        printf("%5.2lf\n", x->fitness);
 }
 
 void initialize()
 {
-    printf("initialize");
+    printf("=========== initialize ===========\n");
     int i, j;
+    int p;
     for(i=0; i<POPULATION_CNT; i++){
-//            printf("\n%d: ", i);
+//        printf("\n%d: ", i);
         for(j=0; j<GENETIC_LENGTH; j++){
-            population[i].genes[j] = BinaryRand();
+            p = (rand() % GENETIC_LENGTH) + 1;
+            population[i].genes[j] = p;
 //            printf("%d", population[i].genes[j]);
-        }
-        cal_xvalue(&population[i]);
-        cal_fitness(&population[i]);
-
-        if(i==0) {
-            memcpy(&best_gene,
-                    &population[i],
-                    sizeof(parent_t));
-        } else if (population[i].fitness < best_gene.fitness){
-            memcpy(&best_gene,
-                    &population[i],
-                    sizeof(parent_t));
         }
     }
 }
 
 void selection()
 {
-//    printf("\nselection\n");
+    printf("=========== selection ============\n");
 
     int i, j, cnt, has_copy = 0;
     int pos1, pos2;
@@ -204,32 +179,6 @@ void selection()
 
     for(i = 0; i < POPULATION_CNT; i++) {
         memcpy(&population[i], &pool[i], sizeof(parent_t));
-    }
-}
-
-void selection_rnd()
-{
-    int i, pos;
-    double fitness_sum=0.0;
-    double column_prob[POPULATION_CNT];
-    double prob;
-
-    for(i=0; i<POPULATION_CNT; i++) {
-        fitness_sum += population[i].fitness;
-    }
-    column_prob[0] = population[0].fitness / fitness_sum;
-    for(i=1; i<POPULATION_CNT; ++i){
-        column_prob[i] =
-            column_prob[i-1] + population[i].fitness / fitness_sum;
-    }
-
-    for(i=0; i<POPULATION_CNT; ++i){
-        prob=SRand();
-        for(pos=0; pos < POPULATION_CNT-1; ++pos){
-            if(prob <= column_prob[pos] )
-                break;
-        }
-        memcpy(&pool[i], &population[pos], sizeof(parent_t));
     }
 }
 
@@ -313,25 +262,23 @@ void print_particles(int num)
 {
     int i, j;
     parent_t* t;
-    printf("\n======================================\n");
     for (i=num; i<POPULATION_CNT; i++) {
         t = &population[i];
-//        printf("%d) ", i);
+        printf("\n%d) ", i);
         for (j=0; j<GENETIC_LENGTH; j++) {
             printf("%d", t->genes[j]);
         }
-        printf(" (%5.10lf, %5.10lf) %5.10lf\n",
-                t->dec_value_x,
-                t->dec_value_y,
-                t->fitness);
+//        printf(" (%5.10lf, %5.10lf) %5.10lf\n",
+//                t->dec_value_x,
+//                t->dec_value_y,
+//                t->fitness);
     }
-    printf("======================================\n");
 }
 
-void print_ever_best()
-{
-	printf(" || ever best: (%5.2lf, %5.2lf) %5.2lf\n",
-		best_gene.dec_value_x,
-		best_gene.dec_value_y,
-		best_gene.fitness);
-}
+//void print_ever_best()
+//{
+//  printf(" || ever best: (%5.2lf, %5.2lf) %5.2lf\n",
+//    best_gene.dec_value_x,
+//    best_gene.dec_value_y,
+//    best_gene.fitness);
+//}

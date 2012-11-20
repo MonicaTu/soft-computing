@@ -1,11 +1,6 @@
-sphere:
-	gcc -DSPHERE -o sphere main.c 
-	./sphere
-
-rastrigin:
-	gcc -DRASTRIGIN -o rastrigin main.c -lm 
-	./rastrigin
+8queen:
+	gcc -o 8queen main.c 
+	./8queen
 
 clean:
-	rm sphere
-	rm rastrigin
+	rm 8queen
