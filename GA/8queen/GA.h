@@ -1,9 +1,9 @@
-#define POPULATION_CNT     10
-#define ITERA_CNT          1
+#define POPULATION_CNT     100
+#define ITERA_CNT          5000
 
 #define GENETIC_LENGTH     8
-#define CROSSOVER_RATE     0.9
-#define MUTATION_RATE      0.02
+#define CROSSOVER_RATE     0.8
+#define MUTATION_RATE      0.01
 
 #define BOARD_LENGTH       8
 
@@ -18,10 +18,7 @@ void selection();
 void crossover();
 void mutation();
 
-void cal_fitness(parent_t* t);
-
-float cal_mean();
-float cal_var();
+int cal_fitness(parent_t* t);
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,37 +33,13 @@ float cal_var();
 
 parent_t population[POPULATION_CNT];
 parent_t pool[POPULATION_CNT];
-parent_t best_gene;
+parent_t *solution;
+int best;
 
 void print_particles(int num);
+void print_area(parent_t* t);
 
-float cal_mean()
-{
-    int i;
-    float sum=0.0, mean=0.0;
-    for (i = 0; i < POPULATION_CNT; i++) {
-/*        printf("+%f\n", population[i].fitness);*/
-        sum = sum + population[i].fitness;
-    }
-
-    mean = sum / (float)POPULATION_CNT;
-    return mean;
-}
-
-float cal_var()
-{
-    int i;
-    float sum=0.0, var=0.0;
-    float mean = cal_mean();
-    for (i = 0; i < POPULATION_CNT; i++) {
-        sum = sum + pow((population[i].fitness - mean), 2);
-    }
-
-    var = sum / (float)POPULATION_CNT;
-    return var;
-}
-
-void cal_fitness(parent_t* t)
+int cal_fitness(parent_t* t)
 {
     int costValue=0;
     int m,n;
@@ -126,7 +99,7 @@ void cal_fitness(parent_t* t)
             m--;
             n++;
         }
-
+#if 1
         // 以該點為中心, 下方
         m=i;
         n=j+1;
@@ -174,11 +147,18 @@ void cal_fitness(parent_t* t)
             }
             m--;
         }
+#endif
 //        printf("(%d, %d) costValue: %d\n", i, j, costValue);
     }
 
-    t->fitness = 28 - costValue;
-//    printf(" fitness: %d\n", t->fitness);
+    t->fitness = 56 - costValue;
+
+    if (t->fitness > best) {
+      best = t->fitness;
+//      printf("best: %d\n", best);
+    }
+
+    return t->fitness;
 }
 
 void fill_area(parent_t *t)
@@ -194,28 +174,22 @@ void fill_area(parent_t *t)
       for (j=0;j<BOARD_LENGTH;j++)
         t->area[i][t->genes[i]] = 1;
 
-    // display
-//    printf("\n");
-//    for (i=0;i<BOARD_LENGTH;i++) {
-//      for (j=0;j<BOARD_LENGTH;j++) {
-//        printf("%d ", t->area[i][j]);
-//      }
-//      printf("\n");
-//    }
+#if 0 // debug
+    print_area(t);
 
-    // debug
-//    for (i=0;i<BOARD_LENGTH;i++) {
-//      for (j=0;j<BOARD_LENGTH;j++) {
-//        if (t->area[i][j] == 1)
-//          printf("(%d, %d) ", i, j);
-//      }
-//    }
-//    printf("\n");
+    for (i=0;i<BOARD_LENGTH;i++) {
+      for (j=0;j<BOARD_LENGTH;j++) {
+        if (t->area[i][j] == 1)
+          printf("(%d, %d) ", i, j);
+      }
+    }
+    printf("\n");
+#endif
 }
 
 void initialize()
 {
-    printf("=========== initialize ===========\n");
+//    printf("=========== initialize ===========\n");
     int i, j;
     int p;
     for(i=0; i<POPULATION_CNT; i++){
@@ -226,14 +200,17 @@ void initialize()
 //            printf("%d", population[i].genes[j]);
         }
         fill_area(&population[i]);
-        cal_fitness(&population[i]);
+        if (cal_fitness(&population[i]) == 56) {
+            print_area(&population[i]);
+            return;
+        }
 //        printf("\n");
     }
 }
 
 void selection()
 {
-    printf("\n=========== selection ============\n");
+//    printf("\n=========== selection ============\n");
 
     int i, j, cnt, has_copy = 0;
     double fitness_sum = 0.0;
@@ -245,7 +222,7 @@ void selection()
     for(i = 0; i<POPULATION_CNT; i++) {
         fitness_sum += population[i].fitness;
     }
-
+#if 0
     for(i=0; i<POPULATION_CNT; i++) {
         if (i == 0)
           prob_start[0] = 0.0;
@@ -259,6 +236,7 @@ void selection()
 
     for(i=0; i<POPULATION_CNT; i++) {
        prob = SRand();
+//       printf("prob: %f ", prob);
        for(j = 0; j < POPULATION_CNT; j++){
           if (prob >= prob_start[j] && prob < prob_end[j]) {
 //              printf("j: %d\n", j);
@@ -268,12 +246,36 @@ void selection()
           }
        }
     }
+#else
+    int choose;
+    for(i=0; i<POPULATION_CNT; i++) {
+        percent = (population[i].fitness/fitness_sum);
+//            printf("percent: %f\n", percent);
+        if (percent >= 1.0/POPULATION_CNT) {
+            memcpy(&pool[has_copy], &population[i], sizeof(parent_t));
+            has_copy++;
+        }
+    }
+
+//    printf("has_copy: %d\n", has_copy);
+    for(i=has_copy; i<POPULATION_CNT; i++) {
+       if (i == 0)
+          break;
+       choose = rand() % has_copy;
+//       printf("choose: %d\n", choose);
+       memcpy(&pool[has_copy], &pool[choose], sizeof(parent_t));
+       has_copy++;
+    }
+#endif
 
     for(i = 0; i < POPULATION_CNT; i++) {
         memcpy(&population[i], &pool[i], sizeof(parent_t));
         // update
         fill_area(&population[i]);
-        cal_fitness(&population[i]);
+        if (cal_fitness(&population[i]) == 56) {
+            print_area(&population[i]);
+            return;
+        }
     }
 }
 
@@ -288,13 +290,11 @@ void crossover()
         p1 = rand() % POPULATION_CNT;
         do {
            p2 = rand()% POPULATION_CNT;
-        }while(p2==p1);
-
-        //  printf("\np1:%d, p2:%d", p1, p2);
+        } while(p2==p1);
+//        printf("\np1:%d, p2:%d", p1, p2);
 
         crossover_if = SRand();
         if(crossover_if > CROSSOVER_RATE) {
-            //            printf("\n!crossover");
             memcpy( (void *)&population[p1],
                     (void *)&pool[p1],
                     sizeof(parent_t));
@@ -303,8 +303,10 @@ void crossover()
                     sizeof(parent_t));
         }
         else {
+//            printf("\n=========== crossover ============\n");
             do{
                 pos = GAPosRand();
+//                printf("pos:%d\n", pos);
             } while(pos==0);
             // crossover
             for(i=0; i<pos; i++){
@@ -315,38 +317,36 @@ void crossover()
                 population[p2].genes[i] = pool[p1].genes[i];
                 population[p1].genes[i] = pool[p2].genes[i];
             }
-            cnt+=2;
         }
-
-//        cal_fitness(&population[p1]);
-//        cal_fitness(&population[p2]);
+        fill_area(&population[p1]);
+        cal_fitness(&population[p1]);
+        fill_area(&population[p2]);
+        cal_fitness(&population[p2]);
+        cnt+=2;
+//            printf("cnt: %d\n", cnt);
     }
 }
 
 void mutation()
 {
-    int i;
+    int i, j;
     int pos;
+    int mutation_value;
+    double mutation_if;
 
-    for(i=0; i<POPULATION_CNT; i++){
-        double mutation_if = SRand();
+    for(i = 0; i<POPULATION_CNT; i++){
+      for (j = 0; j < GENETIC_LENGTH; j++) {
+        mutation_if = SRand();
+        mutation_value =  rand() % GENETIC_LENGTH;
+//        printf("mutation_if: %f\n", mutation_if);
         if(mutation_if <= MUTATION_RATE){
-            printf("\nmutation");
-
-            pos = GAPosRand();
-//            printf("mutation_if:%f\n", mutation_if);
-//            printf("pos:%d\n", pos);
-//            getchar();
-            population[i].genes[pos] =
-                1 - population[i].genes[pos];
+//          printf("\n=========== mutation ============\n");
+//          printf("mutation_value: %d\n", mutation_value);
+          population[i].genes[j] = mutation_value;
         }
-//        cal_fitness(&population[i]);
-
-        if (population[i].fitness < best_gene.fitness){
-            memcpy(&best_gene,
-                    &population[i],
-                    sizeof(parent_t));
-        }
+      }
+      fill_area(&population[i]);
+      cal_fitness(&population[i]);
     }
 }
 
@@ -361,5 +361,16 @@ void print_particles(int num)
             printf("%d", t->genes[j]);
         }
         printf(" fitness: %d", t->fitness);
+    }
+}
+
+void print_area(parent_t* t) {
+    int i, j;
+    printf("\n");
+    for (i=0;i<BOARD_LENGTH;i++) {
+        for (j=0;j<BOARD_LENGTH;j++) {
+            printf("%d ", t->area[i][j]);
+        }
+        printf("\n");
     }
 }
