@@ -221,7 +221,7 @@ void selection()
     for(i = 0; i<POPULATION_CNT; i++) {
         fitness_sum += population[i].fitness;
     }
-#if 0
+#if 1
     for(i=0; i<POPULATION_CNT; i++) {
         if (i == 0)
           prob_start[0] = 0.0;
