@@ -178,7 +178,7 @@ void cal_fitness(parent_t* t)
     }
 
     t->fitness = 28 - costValue;
-    printf(" fitness: %d\n", t->fitness);
+//    printf(" fitness: %d\n", t->fitness);
 }
 
 void fill_area(parent_t *t)
@@ -219,30 +219,30 @@ void initialize()
     int i, j;
     int p;
     for(i=0; i<POPULATION_CNT; i++){
-        printf("%d: ", i);
+//        printf("%d: ", i);
         for(j=0; j<GENETIC_LENGTH; j++){
             p = (rand() % GENETIC_LENGTH);
             population[i].genes[j] = p;
-            printf("%d", population[i].genes[j]);
+//            printf("%d", population[i].genes[j]);
         }
         fill_area(&population[i]);
         cal_fitness(&population[i]);
+//        printf("\n");
     }
 }
 
 void selection()
 {
-    printf("=========== selection ============\n");
+    printf("\n=========== selection ============\n");
 
     int i, j, cnt, has_copy = 0;
     double fitness_sum = 0.0;
 	  double percent = 0.0;
-	  double prob_start[BOARD_LENGTH] = {0};
-	  double prob_end[BOARD_LENGTH] = {0};
+	  double prob_start[POPULATION_CNT] = {0};
+	  double prob_end[POPULATION_CNT] = {0};
 	  double prob = 0.0;
 
     for(i = 0; i<POPULATION_CNT; i++) {
-        cal_fitness(&population[i]);
         fitness_sum += population[i].fitness;
     }
 
@@ -254,20 +254,26 @@ void selection()
 
         percent = (population[i].fitness/fitness_sum);
         prob_end[i] = prob_start[i] + percent;
+//        printf("%d) %f[%f~%f]\n", i, percent, prob_start[i], prob_end[i]);
     }
 
     for(i=0; i<POPULATION_CNT; i++) {
        prob = SRand();
-       printf("rand%d: %f\n", i, prob);
-
-       for(j = 0; j < POPULATION_CNT; ++j, ++has_copy){
-          if (prob >= prob_start[j] && prob < prob_start[j])
+       for(j = 0; j < POPULATION_CNT; j++){
+          if (prob >= prob_start[j] && prob < prob_end[j]) {
+//              printf("j: %d\n", j);
               memcpy(&pool[has_copy], &population[j], sizeof(parent_t));
+              has_copy++;
+              break;
+          }
        }
     }
 
     for(i = 0; i < POPULATION_CNT; i++) {
         memcpy(&population[i], &pool[i], sizeof(parent_t));
+        // update
+        fill_area(&population[i]);
+        cal_fitness(&population[i]);
     }
 }
 
@@ -354,5 +360,6 @@ void print_particles(int num)
         for (j=0; j<GENETIC_LENGTH; j++) {
             printf("%d", t->genes[j]);
         }
+        printf(" fitness: %d", t->fitness);
     }
 }

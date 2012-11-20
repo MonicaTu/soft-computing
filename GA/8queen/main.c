@@ -10,8 +10,8 @@ int main(int argc, char **argv)
     print_particles(0);
 
     for(i=0; i<ITERA_CNT; i++){
-/*        selection();*/
-/*        print_particles(0);*/
+        selection();
+        print_particles(0);
 
 /*        crossover();*/
 /*        mutation();*/
