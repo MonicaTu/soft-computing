@@ -11,9 +11,12 @@ int main(int argc, char **argv)
 
     for(i=1; i<ITERA_CNT+1; i++){
         selection();
+        crossover();
+        mutation();
 
         // termination
-        if (best == 56) {
+        if (solution) {
+          print_area(solution);
           printf("\n(%3d itera)\n", i);
           break;
         }
@@ -21,8 +24,6 @@ int main(int argc, char **argv)
         if (i == ITERA_CNT)
           printf("\n(%3d itera) not found\n", i);
 
-        crossover();
-        mutation();
     }
     printf("\n");
     return 0;

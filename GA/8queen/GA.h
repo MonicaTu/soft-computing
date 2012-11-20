@@ -18,7 +18,7 @@ void selection();
 void crossover();
 void mutation();
 
-int cal_fitness(parent_t* t);
+void cal_fitness(parent_t* t);
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,7 +39,7 @@ int best;
 void print_particles(int num);
 void print_area(parent_t* t);
 
-int cal_fitness(parent_t* t)
+void cal_fitness(parent_t* t)
 {
     int costValue=0;
     int m,n;
@@ -151,14 +151,16 @@ int cal_fitness(parent_t* t)
 //        printf("(%d, %d) costValue: %d\n", i, j, costValue);
     }
 
+    if (costValue == 0) {
+        solution = t;
+    }
+
     t->fitness = 56 - costValue;
 
     if (t->fitness > best) {
       best = t->fitness;
 //      printf("best: %d\n", best);
     }
-
-    return t->fitness;
 }
 
 void fill_area(parent_t *t)
@@ -200,10 +202,7 @@ void initialize()
 //            printf("%d", population[i].genes[j]);
         }
         fill_area(&population[i]);
-        if (cal_fitness(&population[i]) == 56) {
-            print_area(&population[i]);
-            return;
-        }
+        cal_fitness(&population[i]);
 //        printf("\n");
     }
 }
@@ -272,10 +271,7 @@ void selection()
         memcpy(&population[i], &pool[i], sizeof(parent_t));
         // update
         fill_area(&population[i]);
-        if (cal_fitness(&population[i]) == 56) {
-            print_area(&population[i]);
-            return;
-        }
+        cal_fitness(&population[i]);
     }
 }
 
